@@ -1,0 +1,29 @@
+{
+  "name": "nightmare-crawler",
+  "version": "1.0.0",
+  "description": "Web scraping/crawling with Nightmare",
+  "main": "index.js",
+  "dependencies": {
+    "nightmare": "^3.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/f-t-alves/Nightmare-Crawler.git"
+  },
+  "keywords": [
+    "web",
+    "scraping",
+    "crawling",
+    "nightmare"
+  ],
+  "author": "FTAlves",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/f-t-alves/Nightmare-Crawler/issues"
+  },
+  "homepage": "https://github.com/f-t-alves/Nightmare-Crawler#readme"
+}
