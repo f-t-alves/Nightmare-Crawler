@@ -1,39 +1,26 @@
-const Nightmare = require('nightmare');
-const nightmare = Nightmare({ show: false });
-const fs = require('fs');
+const puppeteer = require("puppeteer");
 
-const resultDir = './results/'
+const IMDB_URL = (movie_id) => `https://www.imdb.com/title/${movie_id}/`;
+const MOVIE_ID = `tt0811080`;
 
-nightmare
-  .goto('https://www.gumtree.com')
-  .wait('.search-bar .keyword-search-container input')
-  .type('.search-bar .keyword-search-container input', 'n64 console')
-  .click('.search-bar button[type="submit"]')
-  .wait('#srp-results')
-  .evaluate(() => {
+(async () => {
+  /* Initiate the Puppeteer browser */
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  /* Go to the IMDB Movie page and wait for it to load */
+  await page.goto(IMDB_URL(MOVIE_ID), { waitUntil: "networkidle0" });
+  /* Run javascript inside of the page */
+  let data = await page.evaluate(() => {
+    let title = document.querySelector(
+      '[data-testid="hero-title-block__title"]'
+    ).innerText;
 
-    //get all ads on a page and filter out the non for sale ones
-    let ads = [...document.querySelectorAll('li.natural')];
-    let forSaleAds = ads.filter(ad=> ad.querySelector('.listing-price'));
-
-    //loop through and extract info from each ad into an object
-    let data = forSaleAds.map(ad => {
-      let title = ad.querySelector('.listing-title').innerText;
-      let price = Number.parseInt(ad.querySelector('.listing-price strong').innerText.slice(1));
-      let location = ad.querySelector('.listing-location').innerText;
-      let desc  = ad.querySelector('.listing-description').innerText;
-			
-      return {title, price, location, desc};
-    });
-    //return the array of objects
-    return data;
-  })
-  .end()
-  .then(data => {
-    //convert to JSON and save as file
-    data = JSON.stringify(data, null, 2);
-    fs.writeFileSync(resultDir + 'gumtree.json', data);
-  })
-  .catch(error => {
-    console.error('Scraping failed:', error)
-  })
+    /* Returning an object filled with the scraped data */
+    return {
+      title,
+    };
+  });
+  /* Outputting what we scraped */
+  console.log(data);
+  await browser.close();
+})();
