@@ -5,13 +5,15 @@ require("dotenv").config({ encoding: "utf8", debug: true });
 
 console.log(process.env.PASSWORD.length);
 
-/*
+/* PROD */
 const BASE_URL = "https://xpcorp.gama.academy/";
 const PLAYLIST_URL = "aluno/playlist/372/2716";
-*/
+/* PROD */
 
+/* LOCAL
 const BASE_URL = "http://localhost:5500/";
 const PLAYLIST_URL = "index.html";
+/* LOCAL */
 
 const resultsPath = "./results/";
 
@@ -22,7 +24,7 @@ const resultsPath = "./results/";
   /* Go to the login page and wait for it to load */
   await page.goto(BASE_URL, { waitUntil: "networkidle0" });
 
-  /* WORKING
+  /* WORKING */
   await page.screenshot({ path: `${resultsPath}login.png` });
 
   // Login
@@ -36,7 +38,7 @@ const resultsPath = "./results/";
   await page.screenshot({ path: `${resultsPath}logged.png` });
   
   
-  WORKING */
+  /* WORKING */
 
   // Go to playlist page and wait for it to load
   console.log("Navigating to playlist");
@@ -51,8 +53,7 @@ const resultsPath = "./results/";
     let links = Array.from(list.querySelectorAll("a")).map((anchor) => ({
       url: anchor.href,
       title: anchor.textContent,
-    }
-    ));
+    }));
 
     /* Returning an object filled with the scraped data */
     return {
@@ -63,25 +64,32 @@ const resultsPath = "./results/";
   //console.log(data.links);
   const size = Object.keys(data.links).length;
   console.log(size);
-  await Promise.all(data.links.map(async (pair, i) => {
+  let videoList = await Promise.all(
+    data.links.map(async (pair, i) => {
       console.log(pair.url);
-  }))
 
-  
+      const linkPage = await browser.newPage();
+      await linkPage.goto(pair.url, { waitUntil: "networkidle0" });
+      await linkPage.screenshot({ path: `${resultsPath}link${i}.png` });
 
-  // Extracting video URL
-  let videoURL = await page.evaluate(() => {
-    let iframeList = Array.from(document.getElementsByTagName("iframe")).map(
-      (anchor) => anchor.src
-    );
+      // Extracting video URL
+      let videoURL = await page.evaluate(() => {
+        let iframeList = Array.from(
+          document.getElementsByTagName("iframe")
+        ).map((anchor) => anchor.src);
 
-    return iframeList[0];
-  });
+        return iframeList[0];
+      });
 
-  console.log(videoURL);
+      return {
+        title: pair.title,
+        videoURL: videoURL,
+      }
+    })
+  );
 
-  //data = JSON.stringify(data, null, 2);
-  //fs.writeFileSync(resultsPath + "links.json", data);
+  data = JSON.stringify(videoList, null, 2);
+  fs.writeFileSync(resultsPath + "links.json", data);
 
   await browser.close();
 })();
