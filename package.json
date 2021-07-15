@@ -4,6 +4,7 @@
   "description": "Web scraping/crawling with Nightmare",
   "main": "index.js",
   "dependencies": {
+    "dotenv": "^10.0.0",
     "puppeteer": "^10.1.0"
   },
   "devDependencies": {},
