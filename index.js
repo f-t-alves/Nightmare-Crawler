@@ -3,7 +3,7 @@ const fs = require("fs");
 
 require("dotenv").config({ encoding: "utf8", debug: true });
 
-console.log(process.env.PASSWORD.length);
+console.log("Password length: ", process.env.PASSWORD.length);
 
 /* PROD */
 const BASE_URL = "https://xpcorp.gama.academy/";
@@ -36,8 +36,7 @@ const resultsPath = "./results/";
   await page.click('input[type="submit"][name="commit"]');
   console.log("Clicked!");
   await page.screenshot({ path: `${resultsPath}logged.png` });
-  
-  
+
   /* WORKING */
 
   // Go to playlist page and wait for it to load
@@ -63,7 +62,7 @@ const resultsPath = "./results/";
   // Outputting links list
   //console.log(data.links);
   const size = Object.keys(data.links).length;
-  console.log(size);
+  console.log("Links list size: ", size);
   let videoList = await Promise.all(
     data.links.map(async (pair, i) => {
       console.log(pair.url);
@@ -73,18 +72,16 @@ const resultsPath = "./results/";
       await linkPage.screenshot({ path: `${resultsPath}link${i}.png` });
 
       // Extracting video URL
-      let videoURL = await page.evaluate(() => {
-        let iframeList = Array.from(
-          document.getElementsByTagName("iframe")
-        ).map((anchor) => anchor.src);
+      const videoURL = await linkPage.evaluate(() => {
+        const iframeList = Array.from(document.getElementsByTagName("iframe")); //.map((anchor) => anchor.src);
 
-        return iframeList[0];
+        return iframeList[0].src;
       });
 
       return {
         title: pair.title,
-        videoURL: videoURL,
-      }
+        URL: videoURL,
+      };
     })
   );
 
