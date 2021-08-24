@@ -7,7 +7,7 @@ console.log("Password length: ", process.env.PASSWORD.length);
 
 /* PROD */
 const BASE_URL = "https://xpcorp.gama.academy/";
-const PLAYLIST_URL = "aluno/playlist/372/2716";
+const PLAYLIST_URL = "aluno/playlist/444/3673";
 /* PROD */
 
 /* LOCAL
